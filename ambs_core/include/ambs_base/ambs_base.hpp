@@ -44,6 +44,8 @@ private:
   bool getInputFlag(std::string key);
   void pubOutputFlag(std::string key, bool data);
   void callbacksForAllControlInterfaces(const ambs_msgs::BoolStamped::ConstPtr& msg, std::string key);
+  template<class T>
+  void templatedCB(const T msg, std::string key);
 };
 
 }

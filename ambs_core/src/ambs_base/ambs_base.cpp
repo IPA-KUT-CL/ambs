@@ -17,10 +17,14 @@ AmbsBase::AmbsBase(std::map<std::string, std::string> control_input_interface,
     AmbsInterface<bool> interface(input.first, input.second);
     interface.index_ = static_cast<uint64_t>(std::distance(control_input_interface.begin(),
                                                            control_input_interface.find(input.first)));
+    interface.value_ = false;
     interface.sub_ =
+//        nh_.subscribe<ambs_msgs::BoolStamped>(input.second, subscriber_queue_size_,
+//                                              boost::bind(
+//                                                &AmbsBase::callbacksForAllControlInterfaces, this, _1, input.first));
         nh_.subscribe<ambs_msgs::BoolStamped>(input.second, subscriber_queue_size_,
-                                              boost::bind(
-                                                &AmbsBase::callbacksForAllControlInterfaces, this, _1, input.first));
+                      boost::bind(&AmbsBase::templatedCB<ambs_msgs::BoolStamped::ConstPtr>,
+                                            this, _1, input.first));
         control_interfaces_[input.first] = interface;
         ROS_INFO_STREAM("Input iface " << input.first << " : "
                         << input.second << " @pos: " << interface.index_);
@@ -29,7 +33,8 @@ AmbsBase::AmbsBase(std::map<std::string, std::string> control_input_interface,
   for (auto output : control_output_interface)
   {
     AmbsInterface<bool> interface(output.first, output.second);
-    interface.index_ = static_cast<uint64_t>(std::distance(control_output_interface.begin(),
+    interface.index_ = control_input_interface.size() +
+        static_cast<uint64_t>(std::distance(control_output_interface.begin(),
                                                            control_output_interface.find(output.first)));
     interface.pub_ =
         nh_.advertise<ambs_msgs::BoolStamped>((output.second), publisher_queue_size_);
@@ -39,7 +44,7 @@ AmbsBase::AmbsBase(std::map<std::string, std::string> control_input_interface,
   }
 
   // TESTING ONLY
-  ros::Rate rate(100);
+  ros::Rate rate(2);
   while (ros::ok())
   {
     for (auto input : control_input_interface)
@@ -79,6 +84,14 @@ void AmbsBase::pubOutputFlag(std::string key, bool data)
 }
 
 void AmbsBase::callbacksForAllControlInterfaces(const ambs_msgs::BoolStamped::ConstPtr &msg, std::string key)
+{
+  mutexes_.at(control_interfaces_[key].index_).lock();
+  control_interfaces_[key].value_ = msg->data;
+  mutexes_.at(control_interfaces_[key].index_).unlock();
+}
+
+template<class T>
+void AmbsBase::templatedCB(const T msg, std::string key)
 {
   mutexes_.at(control_interfaces_[key].index_).lock();
   control_interfaces_[key].value_ = msg->data;

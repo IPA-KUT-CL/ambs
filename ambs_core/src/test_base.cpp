@@ -2,6 +2,13 @@
 #include <string>
 #include "ambs_base/ambs_base.hpp"
 
+template<class T>
+void templatedCB(const T msg)
+{
+  ROS_INFO_STREAM("Val: " << std::to_string(msg->data));
+}
+
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "test_base");
@@ -18,6 +25,10 @@ int main(int argc, char **argv)
 
 
   ambs_base::AmbsBase test_obj = ambs_base::AmbsBase(control_inputs, control_outputs, nh);
+
+  ros::Subscriber test_sub =
+      nh.subscribe<ambs_msgs::BoolStamped::ConstPtr>("/test_sub", 10,
+                                                      templatedCB<ambs_msgs::BoolStamped::ConstPtr>);
 
   ROS_INFO("Hello World");
   ros::spin();
