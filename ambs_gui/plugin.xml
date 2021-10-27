@@ -1,0 +1,25 @@
+<library path="lib/libambs_gui">
+  <class name="ambs_gui/MyPlugin" type="ambs_gui::MyPlugin" base_class_type="rqt_gui_cpp::Plugin">
+    <description>
+      GUI for ARAIG tests
+    </description>
+    <qtgui>
+      <!-- optional grouping...
+      <group>
+        <label>Group</label>
+      </group>
+      <group>
+        <label>Subgroup</label>
+      </group>
+      -->
+      <group>
+        <label>Custom</label>
+        <icon type="theme">folder</icon>
+        <statustip>Custom plugin</statustip>
+      </group>
+      <label>ambs GUI</label>
+      <icon type="theme">folder</icon>
+      <statustip>Great user interface to provide real value.</statustip>
+    </qtgui>
+  </class>
+</library>

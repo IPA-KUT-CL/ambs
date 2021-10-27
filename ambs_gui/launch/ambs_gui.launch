@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="ambs_gui" type="my_plugin" name="GUI" output="screen">
+    </node>
+    <node pkg="ambs_gui" type="test_node" name="test_node" output="screen">
+        <remap from="/araig_test_gui/reset_test" to="/ambs_gui/reset_test"/>
+        <remap from="/araig_test_gui/start_test" to="/ambs_gui/start_test"/>
+        <remap from="/araig_test_gui/stop_test" to="/ambs_gui/stop_test"/>
+        <remap from="/araig_test_gui/test_running" to="/ambs_gui/test_running"/>
+        <remap from="/araig_test_gui/test_successful" to="/ambs_gui/test_successful"/>
+
+    </node>
+</launch>
