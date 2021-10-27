@@ -43,6 +43,10 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
+set(ambs_base_interface_HDRS
+    ../ambs_core/include/ambs_core/ambs_base_interface/ambs_base_interface.hpp
+    ../ambs_core/include/ambs_core/ambs_base_interface/ambs_boolean_interface.hpp
+    )
 
 set (ambs_gui_SRCS
   src/ambs_gui/my_plugin.cpp
@@ -77,7 +81,6 @@ include_directories(
   # TODO(lucasw) This is needed for generated headers, but catkin lint doesn't like it
   ${CMAKE_CURRENT_BINARY_DIR}/..
   ${catkin_INCLUDE_DIRS}
-  include/ambs_gui/
 )
 # changed MOCS for HDRS
 ## Declare a cpp library
@@ -85,6 +88,8 @@ add_library(${PROJECT_NAME}
     ${ambs_gui_SRCS}
     ${ambs_gui_MOCS}
     ${ambs_gui_UIS_H}
+    ${ambs_base_interface_HDRS}
+    ##/home/chang/gui_catkin_ws/src/ambs/ambs_core/include/ambs_core/ambs_base_interface
     )
 
 ## Declare a C++ executable

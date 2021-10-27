@@ -16,12 +16,14 @@
 #include "std_msgs/Bool.h"
 #include "nodelet/nodelet.h"
 #include <boost/bind.hpp>
+//#include "ambs_core/ambs_base_interface/ambs_base_interface.hpp"
+#include "ambs_core/ambs_base_interface/ambs_boolean_interface.hpp"
 
 namespace ambs_gui
 {
 
 class MyPlugin
-  : public rqt_gui_cpp::Plugin
+  : public rqt_gui_cpp::Plugin, public ambs_base::AMBSBooleanInterface
 {
   // enable meta-object's support
   Q_OBJECT
@@ -35,10 +37,17 @@ public:
   virtual void restoreSettings(const qt_gui_cpp::Settings& plugin_settings,
       const qt_gui_cpp::Settings& instance_settings);
 
+  void init(std::vector<std::string> input_interface,
+              std::vector<std::string> output_interface,
+              ros::NodeHandle nh,
+              std::string node_name);
+
 protected:
   ros::NodeHandle nh;
   std::vector<ros::Publisher> input_pubs_;
   std::vector<ros::Subscriber> output_subs_;
+  ambs_base::AMBSBooleanInterface* Interface;
+
 private:
   bool test_ready = false;
   const int _NUM_INPUTS_ = 4;
@@ -47,6 +56,8 @@ private:
   std::vector<std::string> _NAME_OUTPUTS_;
   std::vector<bool> input_states;
   std::vector<bool> output_states;
+  std::vector<std::string> _Test_Inputs_;
+  std::vector<std::string> _Test_Outputs_;
 
 public:
   void callbackBool(const std_msgs::BoolConstPtr& msg, const std::string &topicName);

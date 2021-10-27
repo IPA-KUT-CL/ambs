@@ -3,6 +3,7 @@
 
 #include "ambs_core/ambs_base_interface/ambs_base_interface.hpp"
 #include "ambs_msgs/BoolStamped.h"
+#include <iterator>
 
 namespace ambs_base {
 
@@ -21,6 +22,10 @@ public:
 
   ambs_msgs::BoolStamped constructNewBoolStamped(bool data);
   ambs_msgs::BoolStamped waitForTrueOnPort(std::string port);
+  std::vector<bool> getAllOutPortMsg();
+  std::vector<bool> getAllInPortMsg();
+  int inputsSize;
+  int outputsSize;
 
 private:
   const double wait_loop_rate = 500;
@@ -38,6 +43,8 @@ inline AMBSBooleanInterface::AMBSBooleanInterface(ros::NodeHandle nh,
                                            std::vector<std::string> extended_bool_outputs)
 {
   init(extended_bool_inputs, extended_bool_outputs, nh, node_name);
+  inputsSize = extended_bool_inputs.size();
+  outputsSize = extended_bool_outputs.size();
 }
 
 /**
@@ -76,6 +83,29 @@ inline ambs_msgs::BoolStamped AMBSBooleanInterface::waitForTrueOnPort(std::strin
   }
   resetPort(port);
   return msg;
+}
+
+inline std::vector<bool> AMBSBooleanInterface::getAllInPortMsg()
+{
+  std::vector<bool> inPortMsg;
+  auto iter = interfaces_.begin();
+  for(int i = 0; i < inputsSize; i++){
+    inPortMsg.push_back(iter->second.msg_.data);
+    ++iter;
+  }
+  return inPortMsg;
+}
+
+inline std::vector<bool> AMBSBooleanInterface::getAllOutPortMsg()
+{
+  std::vector<bool> outPortMsg;
+  auto iter = interfaces_.begin();
+  std::advance(iter, inputsSize);
+  for(int i = 0; i < outputsSize; i++){
+    outPortMsg.push_back(iter->second.msg_.data);
+    ++iter;
+  }
+  return outPortMsg;
 }
 
 

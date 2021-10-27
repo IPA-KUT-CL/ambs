@@ -1,4 +1,4 @@
-#include "tablemodel.h"
+#include "ambs_gui/tablemodel.h"
 
 TableModel::TableModel(QObject *parent)
     : QAbstractTableModel(parent)

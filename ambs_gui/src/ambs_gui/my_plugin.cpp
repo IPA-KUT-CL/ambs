@@ -10,9 +10,11 @@
 #include "nodelet/nodelet.h"
 #include "std_msgs/Bool.h"
 #include <QTableView>
-#include "tablemodel.h"
+#include "ambs_gui/tablemodel.h"
 
 #include "ambs_core/ambs_base_interface/ambs_boolean_interface.hpp"
+#include <vector>
+#include <string>
 
 namespace ambs_gui
 {
@@ -49,6 +51,10 @@ void MyPlugin::initPlugin(qt_gui_cpp::PluginContext& context)
 
 
   nh = getNodeHandle();
+  std::vector<std::string> _Test_Inputs_ = {"IN1", "IN2", "IN3"};
+  std::vector<std::string> _Test_Outputs_ = {"OUT1", "OUT2"};
+  Interface = new ambs_base::AMBSBooleanInterface(nh, "GUI_Node", _Test_Inputs_, _Test_Outputs_);
+
   _NAME_INPUTS_ = {"start_test", "stop_test", "reset_test", "test_successful"};
   _NAME_OUTPUTS_ = {"test_running", "test_successful"};
   input_pubs_.resize(_NUM_INPUTS_);
@@ -59,7 +65,6 @@ void MyPlugin::initPlugin(qt_gui_cpp::PluginContext& context)
   spawnSubs();
   stateInit();
   ROS_INFO_STREAM("GUI: ARAIG_TEST_GUI initialized!");
-
 }
 
 void MyPlugin::shutdownPlugin()
@@ -125,6 +130,29 @@ void MyPlugin::callbackBool(const std_msgs::BoolConstPtr& msg, const std::string
 
 void MyPlugin::outputTestState()
 {
+//  int idx = 0;
+//  int outIdx;
+//  auto iter = Interface->interfaces_.begin();
+//  while(iter != Interface->interfaces_.end())
+//  {
+//    if(idx < _Test_Inputs_.size())
+//    {
+//      continue;
+//    }
+//    else {
+//      outIdx = idx - _Test_Inputs_.size();
+//      if(Interface->isPortValid(_Test_Outputs_[outIdx]) == true)
+//        output_states[outIdx] = Interface->getPortMsg(_Test_Outputs_[outIdx]);
+//      else {
+//        continue;
+//      }
+//    }
+
+//    ++idx;
+//    ++iter;
+//  }
+  output_states = Interface->getAllOutPortMsg();
+
   bool running = output_states[0];
   bool succ = output_states[1];
 
@@ -179,6 +207,9 @@ void ambs_gui::MyPlugin::on_pbTestStart_clicked()
   input_states[0] = true;
   input_states[1] = false;
   input_states[2] = false;
+  Interface->setPortMsg("OUT1", Interface->constructNewBoolStamped(input_states[0]));
+  Interface->publishMsgOnPort("OUT1", Interface->constructNewBoolStamped(input_states[0]));
+  Interface->printPorts();
   pubPublish(0);
   ROS_INFO_STREAM("GUI: test started!");
   test_ready = false;
